@@ -1,5 +1,6 @@
 var xhr = new XMLHttpRequest(); //create a new XMLHttpRequest for the object.
-xhr.open('GET','http://waterservices.usgs.gov/nwis/dv/?format=json&huc=05&siteStatus=all', true) //true because it is async which means no waiting.
+//open a connection to the httpRequest
+xhr.open('GET','https://rawgit.com/juanjuanzero/FamilyTree/master/data/family.json', true) //true because it is async which means no waiting.
 xhr.send();
 
 //we listen for when the state changes
@@ -10,21 +11,22 @@ function processRequest(e) {
     if(xhr.readyState==4 && xhr.status ==200){
         //process the request and parse it through JSON
         var response = JSON.parse(xhr.responseText);
-        alert(response.ip);
+        //alert(response.ip);
         //alert("Hello World");
         //alert(response.loc);
 
         //construct an array of objects
         var DS_array = [];
         var DS_edges = [];
-        var count = 0;
+        //var count = 0;
+        // the response should return an array of Json objects.
         for( x in response ){
             //create objects
-            var element = {id: count, label: x};
-            var connect = {from: 1, to: count+1};
+            var element = {id: response[x].ID, label: response[x].Decendant_Spouse};
+            var connect = {from: response[x].Parent, to: response[x].ID};
             DS_array.push(element);
             DS_edges.push(connect)
-            count++;
+            //count++;
         }
 
         // create an array with nodes
@@ -47,7 +49,12 @@ function processRequest(e) {
             nodes: nodes,
             edges: edges
         };
-        var options = {};
+        var options = {
+            autoResize: true,
+            height: '100%',
+            width: '100%',
+
+        };
 
         // initialize your network!
         var network = new vis.Network(container, data, options);
